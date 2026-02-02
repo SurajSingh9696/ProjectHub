@@ -1,15 +1,13 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Search as SearchIcon, Filter, X } from 'lucide-react';
 import TaskCard from '@/components/tasks/TaskCard';
 import ProjectCard from '@/components/projects/ProjectCard';
 
-export const dynamic = 'force-dynamic';
-
-export default function SearchPage() {
+function SearchContent() {
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get('q') || '';
   const [query, setQuery] = useState(initialQuery);
@@ -168,5 +166,25 @@ export default function SearchPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={
+      <div className="p-6">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-warm-50 mb-6">Search</h1>
+          <div className="flex gap-4 mb-6">
+            <div className="flex-1 relative">
+              <div className="w-full h-14 bg-charcoal-800 border border-charcoal-700 rounded-lg animate-pulse"></div>
+            </div>
+            <div className="w-32 h-14 bg-charcoal-800 border border-charcoal-700 rounded-lg animate-pulse"></div>
+          </div>
+        </div>
+      </div>
+    }>
+      <SearchContent />
+    </Suspense>
   );
 }
