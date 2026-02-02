@@ -7,6 +7,8 @@ import { Search as SearchIcon, Filter, X } from 'lucide-react';
 import TaskCard from '@/components/tasks/TaskCard';
 import ProjectCard from '@/components/projects/ProjectCard';
 
+export const dynamic = 'force-dynamic';
+
 export default function SearchPage() {
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get('q') || '';
