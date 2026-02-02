@@ -1,0 +1,23 @@
+<svg width="160" height="80" viewBox="0 0 160 80" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- Shared vertical stem (P + H) -->
+  <rect x="72" y="12" width="10" height="56" rx="5" fill="#ffffff"/>
+
+  <!-- P bowl (left side only) -->
+  <path
+    d="M32 12H72C88 12 98 22 98 32C98 42 88 52 72 52H44V12Z"
+    fill="#ffffff"
+  />
+  <!-- Inner cut of P -->
+  <path
+    d="M44 22H72C80 22 86 26 86 32C86 38 80 42 72 42H44V22Z"
+    fill="#0F0F0F"
+  />
+
+  <!-- H right stem -->
+  <rect x="104" y="12" width="10" height="56" rx="5" fill="#F59E0B"/>
+
+  <!-- H crossbar -->
+  <rect x="72" y="36" width="42" height="8" rx="4" fill="#F59E0B"/>
+
+</svg>

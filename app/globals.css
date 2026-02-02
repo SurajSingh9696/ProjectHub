@@ -1,0 +1,133 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 20 14.3% 4.1%;
+  }
+  
+  .dark {
+    --background: 24 9.8% 10%;
+    --foreground: 60 9.1% 97.8%;
+  }
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-poppins), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Light mode styles */
+.light body {
+  background: linear-gradient(to bottom right, #fafaf9, #f5f5f4);
+  color: #1c1917;
+}
+
+.light .bg-charcoal-900 {
+  background-color: #ffffff !important;
+}
+
+.light .bg-charcoal-800 {
+  background-color: #fafaf9 !important;
+}
+
+.light .bg-charcoal-700 {
+  background-color: #f5f5f4 !important;
+}
+
+.light .bg-charcoal-600 {
+  background-color: #e7e5e4 !important;
+}
+
+.light .bg-gradient-to-br {
+  background: linear-gradient(to bottom right, #fafaf9, #f5f5f4) !important;
+}
+
+.light .bg-gradient-to-b {
+  background: linear-gradient(to bottom, rgba(245, 158, 11, 0.05), transparent) !important;
+}
+
+.light .text-warm-50,
+.light .text-warm-100 {
+  color: #1c1917 !important;
+}
+
+.light .text-charcoal-300 {
+  color: #57534e !important;
+}
+
+.light .text-charcoal-400 {
+  color: #78716c !important;
+}
+
+.light .text-charcoal-500 {
+  color: #a8a29e !important;
+}
+
+.light .border-charcoal-700 {
+  border-color: #e7e5e4 !important;
+}
+
+.light .border-charcoal-600 {
+  border-color: #d6d3d1 !important;
+}
+
+.light .bg-charcoal-900\/80 {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+}
+
+.light .shadow-2xl {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1) !important;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Hide number input spinners */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Style date picker calendar icon */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  filter: invert(0.7);
+  transition: filter 0.2s;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  filter: invert(0.5);
+}
+
+/* Hide scrollbar for modal forms */
+.overflow-y-auto::-webkit-scrollbar {
+  display: none;
+}
+
+.overflow-y-auto {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
