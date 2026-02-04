@@ -1,26 +1,25 @@
 'use client';
 
-import Link from 'next/link';
-import { FolderKanban, Calendar, Users, MoreVertical, Edit2, Trash2 } from 'lucide-react';
+import { Calendar, Users, MoreVertical, Edit2, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import EditProjectModal from './EditProjectModal';
+import ProjectDetailsModal from './ProjectDetailsModal';
 
 export default function ProjectCard({ project, onUpdate }) {
   const [showMenu, setShowMenu] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const menuRef = useRef(null);
-  const router = useRouter();
 
   const statusColors = {
-    'Active': 'bg-green-500/10 text-green-500',
-    'On Hold': 'bg-amber-500/10 text-amber-500',
-    'Completed': 'bg-blue-500/10 text-blue-500',
-    'Archived': 'bg-charcoal-600 text-charcoal-400',
+    'Active': 'bg-green-500/10 text-green-500 border-green-500/30',
+    'On Hold': 'bg-amber-500/10 text-amber-500 border-amber-500/30',
+    'Completed': 'bg-blue-500/10 text-blue-500 border-blue-500/30',
+    'Archived': 'bg-charcoal-600 text-charcoal-400 border-charcoal-500',
   };
 
   useEffect(() => {
@@ -65,102 +64,103 @@ export default function ProjectCard({ project, onUpdate }) {
     }
   };
 
-  const handleEdit = () => {
+  const handleEdit = (e) => {
+    e.stopPropagation();
     setShowEditModal(true);
     setShowMenu(false);
   };
 
+  const handleCardClick = () => {
+    setShowDetailsModal(true);
+  };
+
   return (
-    <div className="bg-charcoal-800 border border-charcoal-700 rounded-xl p-6 hover:border-amber-500/50 transition group">
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-amber-500/10 rounded-lg flex items-center justify-center">
-            <FolderKanban size={24} className="text-amber-500" />
-          </div>
-          <div>
-            <Link href={`/dashboard/projects/${project._id}`}>
-              <h3 className="text-lg font-semibold text-warm-50 hover:text-amber-500 transition">
+    <>
+      <motion.div
+        whileHover={{ y: -4 }}
+        onClick={handleCardClick}
+        className="bg-gradient-to-br from-charcoal-800 to-charcoal-800/80 border border-charcoal-700 rounded-xl p-4 md:p-5 hover:border-amber-500/50 transition-all group cursor-pointer relative"
+      >
+        {/* Gradient overlay on hover */}
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-500/0 to-amber-500/0 group-hover:from-amber-500/5 group-hover:to-transparent transition-all pointer-events-none rounded-xl" />
+        
+        <div className="relative">
+          {/* Header with Name and Menu */}
+          <div className="flex items-start justify-between mb-3 md:mb-4">
+            <div className="flex-1 min-w-0">
+              <h3 className="text-lg md:text-xl font-bold text-warm-50 group-hover:text-amber-500 transition line-clamp-2 mb-1">
                 {project.name}
               </h3>
-            </Link>
-            <p className="text-xs text-charcoal-400">{project.category}</p>
-          </div>
-        </div>
-        <div className="relative" ref={menuRef}>
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setShowMenu(!showMenu);
-            }}
-            className="p-2 hover:bg-charcoal-700 rounded-lg transition opacity-0 group-hover:opacity-100"
-          >
-            <MoreVertical size={18} className="text-charcoal-400" />
-          </button>
-          <AnimatePresence>
-            {showMenu && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                className="absolute right-0 top-full mt-2 w-48 bg-charcoal-800 border border-charcoal-700 rounded-lg shadow-xl z-10 overflow-hidden"
-                onClick={(e) => e.stopPropagation()}
+              <p className="text-xs text-charcoal-400">{project.category}</p>
+            </div>
+            
+            <div className="relative ml-2" ref={menuRef}>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowMenu(!showMenu);
+                }}
+                className="p-2 hover:bg-charcoal-700 rounded-lg transition opacity-0 group-hover:opacity-100"
               >
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleEdit();
-                  }}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-warm-100 hover:bg-charcoal-700 transition text-left"
-                >
-                  <Edit2 size={16} className="text-amber-500" />
-                  <span>Edit Project</span>
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleDelete();
-                  }}
-                  disabled={isDeleting}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-charcoal-700 transition text-left disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <Trash2 size={16} />
-                  <span>{isDeleting ? 'Deleting...' : 'Delete Project'}</span>
-                </button>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
-
-      {project.description && (
-        <p className="text-charcoal-300 text-sm mb-4 line-clamp-2">
-          {project.description}
-        </p>
-      )}
-
-      <div className="flex items-center justify-between">
-        <span className={`text-xs px-3 py-1 rounded-full ${statusColors[project.status]}`}>
-          {project.status}
-        </span>
-        
-        {project.deadline && (
-          <div className="flex items-center gap-1 text-xs text-charcoal-400">
-            <Calendar size={14} />
-            {format(new Date(project.deadline), 'MMM dd, yyyy')}
+                <MoreVertical size={18} className="text-charcoal-400" />
+              </button>
+              <AnimatePresence>
+                {showMenu && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                    className="absolute right-0 top-full mt-2 w-48 bg-charcoal-800 border border-charcoal-700 rounded-lg shadow-xl z-20 overflow-hidden"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <button
+                      onClick={handleEdit}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-warm-100 hover:bg-charcoal-700 transition text-left"
+                    >
+                      <Edit2 size={16} className="text-amber-500" />
+                      <span>Edit Project</span>
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete();
+                      }}
+                      disabled={isDeleting}
+                      className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-charcoal-700 transition text-left disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Trash2 size={16} />
+                      <span>{isDeleting ? 'Deleting...' : 'Delete Project'}</span>
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
-        )}
-      </div>
 
-      {project.members && project.members.length > 0 && (
-        <div className="flex items-center gap-2 mt-4 pt-4 border-t border-charcoal-700">
-          <Users size={16} className="text-charcoal-400" />
-          <span className="text-sm text-charcoal-400">
-            {project.members.length} member{project.members.length > 1 ? 's' : ''}
-          </span>
+          {/* Footer with Deadline and Status */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 md:gap-3">
+            {project.deadline ? (
+              <div className="flex items-center gap-2 text-xs md:text-sm text-charcoal-400">
+                <Calendar size={14} className="md:w-4 md:h-4" />
+                <span>{format(new Date(project.deadline), 'MMM dd, yyyy')}</span>
+              </div>
+            ) : (
+              <div className="text-xs text-charcoal-500">No deadline</div>
+            )}
+            
+            <span className={`self-start sm:self-auto text-xs px-3 py-1.5 rounded-lg border-2 font-semibold ${statusColors[project.status]}`}>
+              {project.status}
+            </span>
+          </div>
         </div>
+      </motion.div>
+
+      {showDetailsModal && (
+        <ProjectDetailsModal
+          project={project}
+          onClose={() => setShowDetailsModal(false)}
+          onUpdate={onUpdate}
+        />
       )}
 
       {showEditModal && (
@@ -173,6 +173,6 @@ export default function ProjectCard({ project, onUpdate }) {
           }}
         />
       )}
-    </div>
+    </>
   );
 }

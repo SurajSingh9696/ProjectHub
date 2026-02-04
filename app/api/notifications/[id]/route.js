@@ -16,7 +16,7 @@ export async function PATCH(request, { params }) {
 
     await dbConnect();
 
-    const { id } = params;
+    const { id } = await params;
     const data = await request.json();
 
     const notification = await Notification.findOneAndUpdate(
@@ -55,7 +55,7 @@ export async function DELETE(request, { params }) {
 
     await dbConnect();
 
-    const { id } = params;
+    const { id } = await params;
 
     const notification = await Notification.findOneAndDelete({
       _id: id,

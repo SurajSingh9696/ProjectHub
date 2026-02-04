@@ -228,22 +228,22 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="p-6 max-w-7xl">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-warm-50">Settings</h1>
-        <p className="text-charcoal-300 mt-1">Manage your account and preferences</p>
+    <div className="p-3 md:p-6 max-w-7xl">
+      <div className="mb-4 md:mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold text-warm-50">Settings</h1>
+        <p className="text-sm md:text-base text-charcoal-300 mt-1">Manage your account and preferences</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
         {/* Left Column - Main Settings */}
         <div className="lg:col-span-2 space-y-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-charcoal-800 border border-charcoal-700 rounded-xl p-6"
+          className="bg-charcoal-800 border border-charcoal-700 rounded-xl p-4 md:p-6"
         >
-          <h2 className="text-xl font-bold text-warm-50 mb-6 flex items-center gap-2">
-            <User size={24} className="text-amber-500" />
+          <h2 className="text-lg md:text-xl font-bold text-warm-50 mb-4 md:mb-6 flex items-center gap-2">
+            <User size={20} className="text-amber-500 md:w-6 md:h-6" />
             Profile Information
           </h2>
 
@@ -296,10 +296,10 @@ export default function SettingsPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-charcoal-800 border border-charcoal-700 rounded-xl p-6"
+          className="bg-charcoal-800 border border-charcoal-700 rounded-xl p-4 md:p-6"
         >
-          <h2 className="text-xl font-bold text-warm-50 mb-6 flex items-center gap-2">
-            <Lock size={24} className="text-amber-500" />
+          <h2 className="text-lg md:text-xl font-bold text-warm-50 mb-4 md:mb-6 flex items-center gap-2">
+            <Lock size={20} className="text-amber-500 md:w-6 md:h-6" />
             Change Password
           </h2>
 
@@ -350,12 +350,12 @@ export default function SettingsPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-charcoal-800 border border-charcoal-700 rounded-xl p-6"
+          className="bg-charcoal-800 border border-charcoal-700 rounded-xl p-4 md:p-6"
         >
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-warm-50">Preferences</h2>
+          <div className="flex items-center justify-between mb-4 md:mb-6">
+            <h2 className="text-lg md:text-xl font-bold text-warm-50">Preferences</h2>
             {isSavingPreferences && (
-              <div className="flex items-center gap-2 text-amber-500 text-sm">
+              <div className="flex items-center gap-2 text-amber-500 text-xs md:text-sm">
                 <Loader2 size={16} className="animate-spin" />
                 Saving...
               </div>
@@ -364,11 +364,11 @@ export default function SettingsPage() {
 
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Bell size={20} className="text-amber-500" />
+              <div className="flex items-center gap-2 md:gap-3">
+                <Bell size={18} className="text-amber-500 md:w-5 md:h-5" />
                 <div>
-                  <p className="font-medium text-warm-100">Notifications</p>
-                  <p className="text-sm text-charcoal-400">Receive email notifications</p>
+                  <p className="text-sm md:text-base font-medium text-warm-100">Notifications</p>
+                  <p className="text-xs md:text-sm text-charcoal-400">Receive email notifications</p>
                 </div>
               </div>
               <button
@@ -387,15 +387,15 @@ export default function SettingsPage() {
             </div>
 
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 md:gap-3">
                 {theme === 'light' ? (
-                  <Sun size={20} className="text-amber-500" />
+                  <Sun size={18} className="text-amber-500 md:w-5 md:h-5" />
                 ) : (
-                  <Moon size={20} className="text-amber-500" />
+                  <Moon size={18} className="text-amber-500 md:w-5 md:h-5" />
                 )}
                 <div>
-                  <p className="font-medium text-warm-100">Theme</p>
-                  <p className="text-sm text-charcoal-400">Choose your preferred theme</p>
+                  <p className="text-sm md:text-base font-medium text-warm-100">Theme</p>
+                  <p className="text-xs md:text-sm text-charcoal-400">Choose your preferred theme</p>
                 </div>
               </div>
               <select
@@ -415,11 +415,11 @@ export default function SettingsPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-charcoal-800 border border-red-500/50 rounded-xl p-6"
+          className="bg-charcoal-800 border border-red-500/50 rounded-xl p-4 md:p-6"
         >
-          <h2 className="text-xl font-bold text-red-500 mb-6">Danger Zone</h2>
+          <h2 className="text-lg md:text-xl font-bold text-red-500 mb-4 md:mb-6">Danger Zone</h2>
           
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             {/* Logout Section */}
             <div className="p-4 border border-charcoal-700 rounded-lg">
               <h3 className="font-semibold text-warm-100 mb-2">Logout</h3>
@@ -460,16 +460,16 @@ export default function SettingsPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-charcoal-800 border border-charcoal-700 rounded-xl p-6 sticky top-6"
+            className="bg-charcoal-800 border border-charcoal-700 rounded-xl p-4 md:p-6 lg:sticky lg:top-6"
           >
-            <h2 className="text-xl font-bold text-warm-50 mb-6 flex items-center gap-2">
-              <Camera size={24} className="text-amber-500" />
+            <h2 className="text-lg md:text-xl font-bold text-warm-50 mb-4 md:mb-6 flex items-center gap-2">
+              <Camera size={20} className="text-amber-500 md:w-6 md:h-6" />
               Profile Picture
             </h2>
 
             <div className="flex flex-col items-center">
-              <div className="relative mb-6">
-                <div className="w-40 h-40 rounded-full bg-charcoal-700 border-4 border-charcoal-600 overflow-hidden flex items-center justify-center">
+              <div className="relative mb-4 md:mb-6">
+                <div className="w-32 h-32 md:w-40 md:h-40 rounded-full bg-charcoal-700 border-4 border-charcoal-600 overflow-hidden flex items-center justify-center">
                   {avatarPreview ? (
                     <img
                       src={avatarPreview}
@@ -580,18 +580,6 @@ export default function SettingsPage() {
                   <div>
                     <p className="text-sm text-charcoal-400">Total Tasks</p>
                     <p className="text-xl font-bold text-warm-100">{stats.tasksCount}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-green-500/10 rounded-lg flex items-center justify-center">
-                    <TrendingUp size={20} className="text-green-500" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-charcoal-400">Completed</p>
-                    <p className="text-xl font-bold text-warm-100">{stats.completedTasks}</p>
                   </div>
                 </div>
               </div>

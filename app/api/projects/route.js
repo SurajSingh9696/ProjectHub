@@ -50,7 +50,7 @@ export async function POST(request) {
       );
     }
 
-    const { name, description, category, deadline, status = 'Active' } = await request.json();
+    const { name, description, category, deadline, status = 'Active', teamMembers = [] } = await request.json();
 
     // Enhanced validation
     if (!name || name.trim().length < 3) {
@@ -86,6 +86,10 @@ export async function POST(request) {
 
     await dbConnect();
 
+    // Get current user info for default member
+    const User = (await import('@/lib/models/User')).default;
+    const currentUser = await User.findById(userId).select('name email');
+
     const project = await Project.create({
       name: name.trim(),
       description: description ? description.trim() : '',
@@ -93,8 +97,10 @@ export async function POST(request) {
       deadline,
       status,
       owner: userId,
+      teamMembers: teamMembers || [],
       members: [{
         user: userId,
+        name: currentUser?.name || currentUser?.email || 'You',
         role: 'owner',
       }],
     });

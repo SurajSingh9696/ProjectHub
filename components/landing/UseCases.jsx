@@ -26,23 +26,23 @@ const useCases = [
 
 export default function UseCases() {
   return (
-    <section id="use-cases" className="py-20 px-4 bg-charcoal-800/50">
+    <section id="use-cases" className="py-12 md:py-20 px-4 bg-charcoal-800/50">
       <div className="max-w-6xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
+          className="text-center mb-8 md:mb-16"
         >
-          <h2 className="text-4xl font-bold text-warm-50 mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-warm-50 mb-3 md:mb-4">
             Built for Everyone
           </h2>
-          <p className="text-xl text-charcoal-300 max-w-2xl mx-auto">
+          <p className="text-base md:text-xl text-charcoal-300 max-w-2xl mx-auto px-4">
             Whether you're a student, team, or business, ProjectHub adapts to your needs
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
           {useCases.map((useCase, index) => (
             <motion.div
               key={index}
@@ -50,15 +50,15 @@ export default function UseCases() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="bg-charcoal-800 p-8 rounded-xl border border-charcoal-700"
+              className="bg-charcoal-800 p-4 md:p-8 rounded-xl border border-charcoal-700"
             >
-              <div className="w-16 h-16 bg-amber-500/10 rounded-xl flex items-center justify-center mb-6">
-                <useCase.icon size={32} className="text-amber-500" />
+              <div className="w-12 h-12 md:w-16 md:h-16 bg-amber-500/10 rounded-xl flex items-center justify-center mb-4 md:mb-6">
+                <useCase.icon size={24} className="text-amber-500 md:w-8 md:h-8" />
               </div>
-              <h3 className="text-2xl font-bold text-warm-50 mb-3">
+              <h3 className="text-xl md:text-2xl font-bold text-warm-50 mb-2 md:mb-3">
                 {useCase.title}
               </h3>
-              <p className="text-charcoal-300 mb-6">
+              <p className="text-sm md:text-base text-charcoal-300 mb-4 md:mb-6">
                 {useCase.description}
               </p>
               <ul className="space-y-2">

@@ -6,6 +6,7 @@ import { getAuthUser } from '@/lib/auth/jwt';
 
 export async function PATCH(request, { params }) {
   try {
+    const { id } = await params;
     const userId = await getAuthUser(request);
 
     if (!userId) {
@@ -17,7 +18,7 @@ export async function PATCH(request, { params }) {
 
     await dbConnect();
 
-    const task = await Task.findById(params.id);
+    const task = await Task.findById(id);
 
     if (!task) {
       return NextResponse.json(
@@ -54,6 +55,7 @@ export async function PATCH(request, { params }) {
 
 export async function DELETE(request, { params }) {
   try {
+    const { id } = await params;
     const userId = await getAuthUser(request);
 
     if (!userId) {
@@ -65,7 +67,7 @@ export async function DELETE(request, { params }) {
 
     await dbConnect();
 
-    const task = await Task.findById(params.id);
+    const task = await Task.findById(id);
 
     if (!task) {
       return NextResponse.json(
@@ -74,7 +76,7 @@ export async function DELETE(request, { params }) {
       );
     }
 
-    await Task.findByIdAndDelete(params.id);
+    await Task.findByIdAndDelete(id);
 
     return NextResponse.json({ success: true });
   } catch (error) {

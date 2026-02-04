@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, FolderKanban, Calendar, Users } from 'lucide-react';
+import { Plus, FolderKanban, Calendar, Users, Filter, X } from 'lucide-react';
 import Link from 'next/link';
 import ProjectCard from '@/components/projects/ProjectCard';
 import CreateProjectModal from '@/components/projects/CreateProjectModal';
@@ -11,7 +11,8 @@ export default function ProjectsPage() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [filter, setFilter] = useState('all');
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [activeFilter, setActiveFilter] = useState('all');
 
   useEffect(() => {
     fetchProjects();
@@ -31,9 +32,11 @@ export default function ProjectsPage() {
     }
   };
 
-  const filteredProjects = filter === 'all' 
-    ? projects 
-    : projects.filter(p => p.category === filter);
+  const filteredProjects = projects.filter(p => {
+    if (activeFilter === 'all') return true;
+    // Check if filter matches category or status
+    return p.category === activeFilter || p.status === activeFilter;
+  });
 
   return (
     <div className="p-6">
@@ -51,18 +54,30 @@ export default function ProjectsPage() {
         </button>
       </div>
 
-      <div className="flex gap-4 mb-6">
-        {['all', 'Student', 'Team', 'Business'].map((category) => (
+      {/* Desktop Filters - All in One Line */}
+      <div className="hidden md:flex mb-6 flex-wrap gap-2">
+        <button
+          onClick={() => setActiveFilter('all')}
+          className={`px-4 py-2 rounded-lg font-medium transition ${
+            activeFilter === 'all'
+              ? 'bg-amber-500 text-charcoal-900'
+              : 'bg-charcoal-800 text-charcoal-300 hover:bg-charcoal-700'
+          }`}
+        >
+          All
+        </button>
+        
+        {['Student', 'Team', 'Business', 'Active', 'On Hold', 'Completed', 'Archived'].map((filter) => (
           <button
-            key={category}
-            onClick={() => setFilter(category)}
+            key={filter}
+            onClick={() => setActiveFilter(filter)}
             className={`px-4 py-2 rounded-lg font-medium transition ${
-              filter === category
+              activeFilter === filter
                 ? 'bg-amber-500 text-charcoal-900'
                 : 'bg-charcoal-800 text-charcoal-300 hover:bg-charcoal-700'
             }`}
           >
-            {category === 'all' ? 'All Projects' : category}
+            {filter}
           </button>
         ))}
       </div>
@@ -97,6 +112,76 @@ export default function ProjectsPage() {
           >
             Create Project
           </button>
+        </div>
+      )}
+
+      {/* Mobile Filter Button - Bottom Right */}
+      <button
+        onClick={() => setShowFilterModal(true)}
+        className="md:hidden fixed bottom-20 right-6 z-40 bg-amber-500 text-charcoal-900 p-4 rounded-full shadow-lg hover:bg-amber-400 transition-all hover:scale-110"
+      >
+        <Filter size={24} />
+      </button>
+
+      {/* Mobile Filter Modal */}
+      {showFilterModal && (
+        <div className="md:hidden fixed inset-0 bg-charcoal-900/80 backdrop-blur-sm z-50 flex items-end">
+          <motion.div
+            initial={{ y: '100%' }}
+            animate={{ y: 0 }}
+            exit={{ y: '100%' }}
+            className="bg-charcoal-800 w-full rounded-t-2xl p-6 max-h-[80vh] overflow-y-auto"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-warm-50">Filters</h2>
+              <button
+                onClick={() => setShowFilterModal(false)}
+                className="text-charcoal-400 hover:text-warm-50 transition"
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <button
+                onClick={() => {
+                  setActiveFilter('all');
+                  setShowFilterModal(false);
+                }}
+                className={`w-full px-4 py-3 rounded-lg font-medium transition text-left ${
+                  activeFilter === 'all'
+                    ? 'bg-amber-500 text-charcoal-900'
+                    : 'bg-charcoal-700 text-charcoal-300 hover:bg-charcoal-600'
+                }`}
+              >
+                All Projects
+              </button>
+              
+              {['Student', 'Team', 'Business', 'Active', 'On Hold', 'Completed', 'Archived'].map((filter) => (
+                <button
+                  key={filter}
+                  onClick={() => {
+                    setActiveFilter(filter);
+                    setShowFilterModal(false);
+                  }}
+                  className={`w-full px-4 py-3 rounded-lg font-medium transition text-left ${
+                    activeFilter === filter
+                      ? 'bg-amber-500 text-charcoal-900'
+                      : 'bg-charcoal-700 text-charcoal-300 hover:bg-charcoal-600'
+                  }`}
+                >
+                  {filter}
+                </button>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setShowFilterModal(false)}
+              className="w-full mt-6 py-3 bg-charcoal-700 text-warm-100 rounded-lg font-semibold hover:bg-charcoal-600 transition"
+            >
+              Close
+            </button>
+          </motion.div>
         </div>
       )}
 

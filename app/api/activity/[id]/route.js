@@ -16,7 +16,7 @@ export async function DELETE(request, { params }) {
 
     await dbConnect();
 
-    const { id } = params;
+    const { id } = await params;
 
     // Find and delete the activity, ensuring it belongs to the user
     const activity = await Activity.findOneAndDelete({

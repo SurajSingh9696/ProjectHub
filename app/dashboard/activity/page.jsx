@@ -81,10 +81,10 @@ export default function ActivityPage() {
   };
 
   return (
-    <div className="p-6">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-warm-50">Activity</h1>
-        <p className="text-charcoal-300 mt-1">Recent activities across your projects</p>
+    <div className="p-3 md:p-6">
+      <div className="mb-4 md:mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold text-warm-50">Activity</h1>
+        <p className="text-sm md:text-base text-charcoal-300 mt-1">Recent activities across your projects</p>
       </div>
 
       {loading ? (
@@ -103,11 +103,11 @@ export default function ActivityPage() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.05 }}
-                className="bg-charcoal-800 border border-charcoal-700 rounded-xl p-4 hover:border-amber-500/50 transition"
+                className="bg-charcoal-800 border border-charcoal-700 rounded-xl p-3 md:p-4 hover:border-amber-500/50 transition"
               >
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-amber-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Icon size={20} className="text-amber-500" />
+                <div className="flex items-start gap-3 md:gap-4">
+                  <div className="w-8 h-8 md:w-10 md:h-10 bg-amber-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <Icon size={18} className="text-amber-500 md:w-5 md:h-5" />
                   </div>
                   <div className="flex-1">
                     <p className="text-warm-100">

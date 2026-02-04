@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { X, Loader2, AlertCircle, CheckSquare, Calendar } from 'lucide-react';
+import { X, Loader2, CheckSquare, Calendar } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const priorityColors = {
@@ -12,17 +12,16 @@ const priorityColors = {
   'Urgent': 'bg-red-500/20 hover:bg-red-500/30 border-red-500',
 };
 
-export default function CreateTaskModal({ onClose, onSuccess }) {
+export default function EditTaskModal({ task, onClose, onSuccess }) {
   const [projects, setProjects] = useState([]);
-  const today = new Date().toISOString().split('T')[0];
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    project: '',
-    priority: 'Medium',
-    status: 'To Do',
-    dueDate: today,
-    tags: '',
+    title: task.title || '',
+    description: task.description || '',
+    project: task.project?._id || task.project || '',
+    priority: task.priority || 'Medium',
+    status: task.status || 'To Do',
+    dueDate: task.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : '',
+    tags: task.tags ? task.tags.join(', ') : '',
   });
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
@@ -37,9 +36,6 @@ export default function CreateTaskModal({ onClose, onSuccess }) {
       if (res.ok) {
         const data = await res.json();
         setProjects(data.projects);
-        if (data.projects.length > 0) {
-          setFormData(prev => ({ ...prev, project: data.projects[0]._id }));
-        }
       }
     } catch (error) {
       toast.error('Failed to load projects');
@@ -89,8 +85,8 @@ export default function CreateTaskModal({ onClose, onSuccess }) {
     };
 
     try {
-      const res = await fetch('/api/tasks', {
-        method: 'POST',
+      const res = await fetch(`/api/tasks/${task._id}`, {
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(taskData),
       });
@@ -98,10 +94,10 @@ export default function CreateTaskModal({ onClose, onSuccess }) {
       const data = await res.json();
 
       if (res.ok) {
-        toast.success('Task created successfully!');
+        toast.success('Task updated successfully!');
         onSuccess();
       } else {
-        toast.error(data.error || 'Failed to create task');
+        toast.error(data.error || 'Failed to update task');
       }
     } catch (error) {
       toast.error('Something went wrong. Please try again.');
@@ -109,30 +105,6 @@ export default function CreateTaskModal({ onClose, onSuccess }) {
       setIsLoading(false);
     }
   };
-
-  if (projects.length === 0 && !isLoading) {
-    return (
-      <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="bg-charcoal-800 rounded-xl border border-charcoal-700 w-full max-w-md p-8 text-center"
-        >
-          <AlertCircle size={48} className="text-amber-500 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-warm-50 mb-2">No Projects Found</h2>
-          <p className="text-charcoal-300 mb-6">
-            You need to create a project before adding tasks.
-          </p>
-          <button
-            onClick={onClose}
-            className="px-6 py-3 bg-amber-500 text-charcoal-900 rounded-lg font-semibold hover:bg-amber-400 transition"
-          >
-            Got it
-          </button>
-        </motion.div>
-      </div>
-    );
-  }
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-3 md:p-4">
@@ -147,8 +119,8 @@ export default function CreateTaskModal({ onClose, onSuccess }) {
               <CheckSquare size={18} className="text-charcoal-900 md:w-5 md:h-5" />
             </div>
             <div>
-              <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-warm-50">Create New Task</h2>
-              <p className="text-xs md:text-sm text-charcoal-400 hidden sm:block">Add a new task to your project</p>
+              <h2 className="text-lg md:text-xl lg:text-2xl font-bold text-warm-50">Edit Task</h2>
+              <p className="text-xs md:text-sm text-charcoal-400 hidden sm:block">Update task details</p>
             </div>
           </div>
           <motion.button
@@ -318,19 +290,18 @@ export default function CreateTaskModal({ onClose, onSuccess }) {
               value={formData.tags}
               onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
               className="w-full px-4 py-3 bg-charcoal-700/50 border border-charcoal-600 hover:border-charcoal-500 rounded-xl text-warm-100 placeholder-charcoal-400 focus:outline-none focus:ring-2 focus:ring-amber-500/50 transition-all"
-              placeholder="e.g., frontend, bug, urgent"
+              placeholder="e.g., frontend, urgent, bug-fix"
             />
-            <p className="text-xs text-charcoal-400 mt-1.5">Separate multiple tags with commas</p>
           </div>
 
-          <div className="flex gap-3 pt-4">
+          <div className="flex gap-3 pt-2">
             <motion.button
               type="button"
+              onClick={onClose}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={onClose}
+              className="flex-1 px-4 py-3 bg-charcoal-700 text-warm-100 rounded-xl font-semibold hover:bg-charcoal-600 transition"
               disabled={isLoading}
-              className="flex-1 px-4 py-3 bg-charcoal-700/50 text-warm-100 rounded-xl font-semibold hover:bg-charcoal-600/70 transition-all disabled:opacity-50 border border-charcoal-600"
             >
               Cancel
             </motion.button>
@@ -338,16 +309,16 @@ export default function CreateTaskModal({ onClose, onSuccess }) {
               type="submit"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
+              className="flex-1 px-4 py-3 bg-gradient-to-r from-amber-500 to-amber-600 text-charcoal-900 rounded-xl font-semibold hover:from-amber-400 hover:to-amber-500 transition shadow-lg shadow-amber-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               disabled={isLoading}
-              className="flex-1 px-4 py-3 bg-gradient-to-br from-amber-500 to-amber-600 text-charcoal-900 rounded-xl font-semibold hover:from-amber-400 hover:to-amber-500 transition-all flex items-center justify-center gap-2 disabled:opacity-50 shadow-lg shadow-amber-500/30"
             >
               {isLoading ? (
                 <>
-                  <Loader2 size={20} className="animate-spin" />
-                  Creating...
+                  <Loader2 size={18} className="animate-spin" />
+                  Updating...
                 </>
               ) : (
-                'Create Task'
+                'Update Task'
               )}
             </motion.button>
           </div>

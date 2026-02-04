@@ -29,14 +29,18 @@ export async function GET(request) {
       })
     ]);
 
-    const pending = tasks.filter(t => t.status !== 'Completed').length;
-    const completed = tasks.filter(t => t.status === 'Completed').length;
+    const pendingTasks = tasks.filter(t => t.status !== 'Completed').length;
+    const completedTasks = tasks.filter(t => t.status === 'Completed').length;
+    const completedProjects = projects.filter(p => p.status === 'Completed').length;
+    const pendingProjects = projects.filter(p => p.status !== 'Completed').length;
 
     return NextResponse.json({
       projects: projects.length,
       tasks: tasks.length,
-      pending,
-      completed,
+      pendingTasks,
+      completedTasks,
+      completedProjects,
+      pendingProjects,
     });
   } catch (error) {
     return NextResponse.json(

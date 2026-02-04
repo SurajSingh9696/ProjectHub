@@ -45,6 +45,10 @@ body {
   background-color: #f5f5f4 !important;
 }
 
+.light .bg-charcoal-700\/50 {
+  background-color: #fafaf9 !important;
+}
+
 .light .bg-charcoal-600 {
   background-color: #e7e5e4 !important;
 }
@@ -74,6 +78,10 @@ body {
   color: #a8a29e !important;
 }
 
+.light .placeholder-charcoal-400::placeholder {
+  color: #a8a29e !important;
+}
+
 .light .border-charcoal-700 {
   border-color: #e7e5e4 !important;
 }
@@ -82,12 +90,50 @@ body {
   border-color: #d6d3d1 !important;
 }
 
+.light .hover\:border-charcoal-500:hover {
+  border-color: #a8a29e !important;
+}
+
 .light .bg-charcoal-900\/80 {
   background-color: rgba(255, 255, 255, 0.95) !important;
 }
 
 .light .shadow-2xl {
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Light theme input styles */
+.light input[type="text"],
+.light input[type="email"],
+.light input[type="password"],
+.light input[type="date"],
+.light input[type="number"],
+.light textarea,
+.light select {
+  background-color: #ffffff !important;
+  border-color: #e7e5e4 !important;
+  color: #1c1917 !important;
+}
+
+.light input[type="text"]:hover,
+.light input[type="email"]:hover,
+.light input[type="password"]:hover,
+.light input[type="date"]:hover,
+.light input[type="number"]:hover,
+.light textarea:hover,
+.light select:hover {
+  border-color: #d6d3d1 !important;
+}
+
+.light input[type="text"]:focus,
+.light input[type="email"]:focus,
+.light input[type="password"]:focus,
+.light input[type="date"]:focus,
+.light input[type="number"]:focus,
+.light textarea:focus,
+.light select:focus {
+  border-color: #f59e0b !important;
+  background-color: #ffffff !important;
 }
 
 html {

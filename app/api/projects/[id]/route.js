@@ -7,6 +7,7 @@ import { getAuthUser } from '@/lib/auth/jwt';
 
 export async function GET(request, { params }) {
   try {
+    const { id } = await params;
     const userId = await getAuthUser(request);
 
     if (!userId) {
@@ -18,7 +19,7 @@ export async function GET(request, { params }) {
 
     await dbConnect();
 
-    const project = await Project.findById(params.id)
+    const project = await Project.findById(id)
       .populate('owner', 'name email avatar')
       .populate('members.user', 'name email avatar');
 
@@ -50,6 +51,7 @@ export async function GET(request, { params }) {
 
 export async function PATCH(request, { params }) {
   try {
+    const { id } = await params;
     const userId = await getAuthUser(request);
 
     if (!userId) {
@@ -61,7 +63,7 @@ export async function PATCH(request, { params }) {
 
     await dbConnect();
 
-    const project = await Project.findById(params.id);
+    const project = await Project.findById(id);
 
     if (!project) {
       return NextResponse.json(
@@ -84,8 +86,17 @@ export async function PATCH(request, { params }) {
 
     const updates = await request.json();
     
-    Object.keys(updates).forEach(key => {
-      project[key] = updates[key];
+    // Handle team members update
+    if (updates.teamMembers !== undefined) {
+      project.teamMembers = updates.teamMembers;
+    }
+    
+    // Update other fields
+    const allowedUpdates = ['name', 'description', 'category', 'status', 'deadline'];
+    allowedUpdates.forEach(key => {
+      if (updates[key] !== undefined) {
+        project[key] = updates[key];
+      }
     });
 
     project.updatedAt = Date.now();
@@ -109,6 +120,7 @@ export async function PATCH(request, { params }) {
 
 export async function DELETE(request, { params }) {
   try {
+    const { id } = await params;
     const userId = await getAuthUser(request);
 
     if (!userId) {
@@ -120,7 +132,7 @@ export async function DELETE(request, { params }) {
 
     await dbConnect();
 
-    const project = await Project.findById(params.id);
+    const project = await Project.findById(id);
 
     if (!project) {
       return NextResponse.json(
@@ -137,10 +149,10 @@ export async function DELETE(request, { params }) {
     }
 
     // Delete all tasks related to this project
-    await Task.deleteMany({ project: params.id });
+    await Task.deleteMany({ project: id });
 
     // Delete the project
-    await Project.findByIdAndDelete(params.id);
+    await Project.findByIdAndDelete(id);
 
     return NextResponse.json({ success: true });
   } catch (error) {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Plus } from 'lucide-react';
 import TaskCard from '@/components/tasks/TaskCard';
@@ -20,6 +20,7 @@ export default function TasksPage() {
   const [showModal, setShowModal] = useState(false);
   const [draggedTask, setDraggedTask] = useState(null);
   const [dragOverColumn, setDragOverColumn] = useState(null);
+  const columnRefs = useRef({});
 
   useEffect(() => {
     fetchTasks();
@@ -87,6 +88,47 @@ export default function TasksPage() {
     setDraggedTask(null);
   };
 
+  const updateTaskStatus = async (taskId, newStatus, oldStatus) => {
+    try {
+      const res = await fetch(`/api/tasks/${taskId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (res.ok) {
+        toast.success(`Task moved to ${newStatus}`);
+      } else {
+        toast.error('Failed to update task');
+        // Revert on error
+        setTasks(prev => prev.map(task =>
+          task._id === taskId ? { ...task, status: oldStatus } : task
+        ));
+      }
+    } catch (error) {
+      toast.error('Failed to update task');
+      // Revert on error
+      setTasks(prev => prev.map(task =>
+        task._id === taskId ? { ...task, status: oldStatus } : task
+      ));
+    }
+  };
+
+  const handleTouchDrop = (task, newStatus) => {
+    if (!task || task.status === newStatus) {
+      return;
+    }
+
+    const oldStatus = task.status;
+
+    // Update UI immediately
+    setTasks(prev => prev.map(t =>
+      t._id === task._id ? { ...t, status: newStatus } : t
+    ));
+
+    updateTaskStatus(task._id, newStatus, oldStatus);
+  };
+
   const getTasksByStatus = (status) => {
     return tasks.filter(task => task.status === status);
   };
@@ -136,6 +178,7 @@ export default function TasksPage() {
             </div>
 
             <div
+              ref={(el) => (columnRefs.current[column.id] = el)}
               onDragOver={(e) => handleDragOver(e, column.id)}
               onDragLeave={handleDragLeave}
               onDrop={(e) => handleDrop(e, column.id)}
@@ -150,6 +193,9 @@ export default function TasksPage() {
                     task={task}
                     isDragging={draggedTask?._id === task._id}
                     onDragStart={() => handleDragStart(task)}
+                    onTouchDrop={handleTouchDrop}
+                    columnRefs={columnRefs}
+                    setDragOverColumn={setDragOverColumn}
                     onUpdate={fetchTasks}
                   />
                 ))}

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { X, Save, Loader2 } from 'lucide-react';
+import { X, Save, Loader2, Users, Plus, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 export default function EditProjectModal({ project, onClose, onSuccess }) {
@@ -15,6 +15,11 @@ export default function EditProjectModal({ project, onClose, onSuccess }) {
     status: project.status || 'Active',
     deadline: project.deadline ? new Date(project.deadline).toISOString().split('T')[0] : today,
   });
+  const [teamMembers, setTeamMembers] = useState(
+    project.teamMembers && project.teamMembers.length > 0 
+      ? project.teamMembers 
+      : ['']
+  );
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
@@ -48,10 +53,18 @@ export default function EditProjectModal({ project, onClose, onSuccess }) {
 
     setIsLoading(true);
     try {
+      const isTeamProject = formData.category === 'Team' || formData.category === 'Business';
+      const filteredTeamMembers = isTeamProject 
+        ? teamMembers.filter(member => member.trim() !== '') 
+        : [];
+
       const res = await fetch(`/api/projects/${project._id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          teamMembers: filteredTeamMembers,
+        }),
       });
 
       const data = await res.json();
@@ -69,25 +82,41 @@ export default function EditProjectModal({ project, onClose, onSuccess }) {
     }
   };
 
+  const addTeamMember = () => {
+    setTeamMembers([...teamMembers, '']);
+  };
+
+  const removeTeamMember = (index) => {
+    setTeamMembers(teamMembers.filter((_, i) => i !== index));
+  };
+
+  const updateTeamMember = (index, value) => {
+    const updated = [...teamMembers];
+    updated[index] = value;
+    setTeamMembers(updated);
+  };
+
+  const isTeamProject = formData.category === 'Team' || formData.category === 'Business';
+
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-3 md:p-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-charcoal-800 rounded-xl border border-charcoal-700 w-full max-w-3xl"
+        className="bg-charcoal-800 rounded-xl border border-charcoal-700 w-full max-w-3xl max-h-[90vh] overflow-y-auto"
       >
-        <div className="flex items-center justify-between p-6 border-b border-charcoal-700">
-          <h2 className="text-2xl font-bold text-warm-50">Edit Project</h2>
+        <div className="flex items-center justify-between p-4 md:p-6 border-b border-charcoal-700">
+          <h2 className="text-xl md:text-2xl font-bold text-warm-50">Edit Project</h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-charcoal-700 rounded-lg transition"
           >
-            <X size={20} className="text-charcoal-400" />
+            <X size={18} className="text-charcoal-400 md:w-5 md:h-5" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6">
+        <form onSubmit={handleSubmit} className="p-4 md:p-6">
           <div className="grid md:grid-cols-2 gap-4 mb-4">
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-warm-100 mb-2">
@@ -100,7 +129,7 @@ export default function EditProjectModal({ project, onClose, onSuccess }) {
                   setFormData({ ...formData, name: e.target.value });
                   if (errors.name) setErrors({ ...errors, name: '' });
                 }}
-                className={`w-full px-4 py-2.5 bg-charcoal-700 border rounded-lg text-warm-100 focus:outline-none focus:border-amber-500 transition ${
+                className={`w-full px-3 py-2 text-sm bg-charcoal-700 border rounded-lg text-warm-100 focus:outline-none focus:border-amber-500 transition ${
                   errors.name ? 'border-red-500' : 'border-charcoal-600 hover:border-charcoal-500'
                 }`}
               />
@@ -118,7 +147,7 @@ export default function EditProjectModal({ project, onClose, onSuccess }) {
               <select
                 value={formData.category}
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                className="w-full px-4 py-2.5 bg-charcoal-700 border border-charcoal-600 rounded-lg text-warm-100 focus:outline-none focus:border-amber-500 transition hover:border-charcoal-500 cursor-pointer"
+                className="w-full px-3 py-2 text-sm bg-charcoal-700 border border-charcoal-600 rounded-lg text-warm-100 focus:outline-none focus:border-amber-500 transition hover:border-charcoal-500 cursor-pointer"
               >
                 <option value="Student">Student</option>
                 <option value="Team">Team</option>
@@ -133,7 +162,7 @@ export default function EditProjectModal({ project, onClose, onSuccess }) {
               <select
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                className="w-full px-4 py-2.5 bg-charcoal-700 border border-charcoal-600 rounded-lg text-warm-100 focus:outline-none focus:border-amber-500 transition hover:border-charcoal-500 cursor-pointer"
+                className="w-full px-3 py-2 text-sm bg-charcoal-700 border border-charcoal-600 rounded-lg text-warm-100 focus:outline-none focus:border-amber-500 transition hover:border-charcoal-500 cursor-pointer"
               >
                 <option value="Active">Active</option>
                 <option value="On Hold">On Hold</option>
@@ -150,10 +179,54 @@ export default function EditProjectModal({ project, onClose, onSuccess }) {
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 rows={3}
-                className="w-full px-4 py-2.5 bg-charcoal-700 border border-charcoal-600 rounded-lg text-warm-100 focus:outline-none focus:border-amber-500 transition resize-none hover:border-charcoal-500"
+                className="w-full px-3 py-2 text-sm bg-charcoal-700 border border-charcoal-600 rounded-lg text-warm-100 focus:outline-none focus:border-amber-500 transition resize-none hover:border-charcoal-500"
                 placeholder="Brief description of your project..."
               />
             </div>
+
+            {/* Team Members Section - Only for Team/Business */}
+            {isTeamProject && (
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-warm-100 mb-2 flex items-center gap-2">
+                  <Users size={16} className="text-amber-500" />
+                  Team Members
+                </label>
+                <div className="space-y-2 mb-2">
+                  {teamMembers.map((member, index) => (
+                    <div key={index} className="flex gap-2">
+                      <input
+                        type="text"
+                        value={member}
+                        onChange={(e) => updateTeamMember(index, e.target.value)}
+                        placeholder={index === 0 ? "You (Default member)" : "Member name"}
+                        className="flex-1 px-4 py-2.5 bg-charcoal-700 border border-charcoal-600 rounded-lg text-warm-100 focus:outline-none focus:border-amber-500 transition hover:border-charcoal-500 text-sm"
+                      />
+                      {teamMembers.length > 1 && (
+                        <motion.button
+                          type="button"
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => removeTeamMember(index)}
+                          className="p-2.5 bg-red-500/10 text-red-400 rounded-lg hover:bg-red-500/20 transition-all border border-red-500/30"
+                        >
+                          <Trash2 size={16} />
+                        </motion.button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <motion.button
+                  type="button"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={addTeamMember}
+                  className="w-full py-2.5 bg-charcoal-700 border-2 border-dashed border-charcoal-600 hover:border-amber-500/50 rounded-lg text-charcoal-400 hover:text-amber-500 transition-all flex items-center justify-center gap-2 text-sm font-medium"
+                >
+                  <Plus size={16} />
+                  Add Team Member
+                </motion.button>
+              </div>
+            )}
 
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-warm-100 mb-2">
@@ -166,7 +239,7 @@ export default function EditProjectModal({ project, onClose, onSuccess }) {
                   setFormData({ ...formData, deadline: e.target.value });
                   if (errors.deadline) setErrors({ ...errors, deadline: '' });
                 }}
-                className={`w-full px-4 py-2.5 bg-charcoal-700 border rounded-lg text-warm-100 focus:outline-none focus:border-amber-500 transition ${
+                className={`w-full px-3 py-2 text-sm bg-charcoal-700 border rounded-lg text-warm-100 focus:outline-none focus:border-amber-500 transition ${
                   errors.deadline ? 'border-red-500' : 'border-charcoal-600 hover:border-charcoal-500'
                 }`}
               />
