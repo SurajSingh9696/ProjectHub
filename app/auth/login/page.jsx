@@ -26,7 +26,7 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (res.ok) {
-        toast.success('Login successful!');
+        toast.success('Login successful!', { duration: 2000 });
         setTimeout(() => router.push('/dashboard'), 1000);
       } else {
         toast.error(data.error || 'Login failed');
