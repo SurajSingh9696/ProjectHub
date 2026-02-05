@@ -23,8 +23,6 @@ export default function ProjectCard({ project, onUpdate }) {
     'Completed': 'bg-blue-500/10 text-blue-500 border-blue-500/30 dark:bg-blue-500/10 dark:text-blue-500 dark:border-blue-500/30',
   };
 
-  const [isUpdating, setIsUpdating] = useState(false);
-
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
