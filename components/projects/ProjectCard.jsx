@@ -1,6 +1,6 @@
 'use client';
 
-import { Calendar, Users, MoreVertical, Edit2, Trash2, CheckCircle } from 'lucide-react';
+import { Calendar, Users, MoreVertical, Edit2, Trash2, CheckCircle, ChevronDown } from 'lucide-react';
 import { format } from 'date-fns';
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -13,6 +13,8 @@ export default function ProjectCard({ project, onUpdate }) {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [expandedStatus, setExpandedStatus] = useState(false);
   const menuRef = useRef(null);
 
   const statusColors = {
@@ -151,38 +153,100 @@ export default function ProjectCard({ project, onUpdate }) {
                       <Edit2 size={16} className="text-amber-500" />
                       <span>Edit Project</span>
                     </button>
-                    <div className="border-t border-charcoal-700 my-1" />
-                    <div className="px-3 py-2 text-xs font-semibold text-charcoal-400 uppercase">Status</div>
-                    <button
-                      onClick={() => handleStatusChange('Active')}
-                      disabled={isUpdating || project.status === 'Active'}
-                      className={`w-full flex items-center gap-3 px-4 py-2.5 transition text-left text-sm disabled:opacity-50 ${
-                        project.status === 'Active' ? 'bg-charcoal-700 text-green-400' : 'text-warm-100 hover:bg-charcoal-700'
-                      }`}
-                    >
-                      <CheckCircle size={14} className="text-green-500" />
-                      <span>Active</span>
-                    </button>
-                    <button
-                      onClick={() => handleStatusChange('On Hold')}
-                      disabled={isUpdating || project.status === 'On Hold'}
-                      className={`w-full flex items-center gap-3 px-4 py-2.5 transition text-left text-sm disabled:opacity-50 ${
-                        project.status === 'On Hold' ? 'bg-charcoal-700 text-amber-400' : 'text-warm-100 hover:bg-charcoal-700'
-                      }`}
-                    >
-                      <CheckCircle size={14} className="text-amber-500" />
-                      <span>On Hold</span>
-                    </button>
-                    <button
-                      onClick={() => handleStatusChange('Completed')}
-                      disabled={isUpdating || project.status === 'Completed'}
-                      className={`w-full flex items-center gap-3 px-4 py-2.5 transition text-left text-sm disabled:opacity-50 ${
-                        project.status === 'Completed' ? 'bg-charcoal-700 text-blue-400' : 'text-warm-100 hover:bg-charcoal-700'
-                      }`}
-                    >
-                      <CheckCircle size={14} className="text-blue-500" />
-                      <span>Completed</span>
-                    </button>
+                    
+                    {/* Collapsible Status Section on Mobile */}
+                    <div className="md:hidden">
+                      <div className="border-t border-charcoal-700" />
+                      <button
+                        onClick={() => setExpandedStatus(!expandedStatus)}
+                        className="w-full flex items-center justify-between px-4 py-3 text-warm-100 hover:bg-charcoal-700 transition text-left"
+                      >
+                        <span className="text-sm font-medium">Change Status</span>
+                        <ChevronDown 
+                          size={16} 
+                          className={`text-charcoal-400 transition-transform ${expandedStatus ? 'rotate-180' : ''}`}
+                        />
+                      </button>
+                      <AnimatePresence>
+                        {expandedStatus && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="overflow-hidden"
+                          >
+                            <button
+                              onClick={() => handleStatusChange('Active')}
+                              disabled={isUpdating || project.status === 'Active'}
+                              className={`w-full flex items-center gap-3 px-4 py-2.5 transition text-left text-sm disabled:opacity-50 ${
+                                project.status === 'Active' ? 'bg-charcoal-700 text-green-400' : 'text-warm-100 hover:bg-charcoal-700'
+                              }`}
+                            >
+                              <CheckCircle size={14} className="text-green-500" />
+                              <span>Active</span>
+                            </button>
+                            <button
+                              onClick={() => handleStatusChange('On Hold')}
+                              disabled={isUpdating || project.status === 'On Hold'}
+                              className={`w-full flex items-center gap-3 px-4 py-2.5 transition text-left text-sm disabled:opacity-50 ${
+                                project.status === 'On Hold' ? 'bg-charcoal-700 text-amber-400' : 'text-warm-100 hover:bg-charcoal-700'
+                              }`}
+                            >
+                              <CheckCircle size={14} className="text-amber-500" />
+                              <span>On Hold</span>
+                            </button>
+                            <button
+                              onClick={() => handleStatusChange('Completed')}
+                              disabled={isUpdating || project.status === 'Completed'}
+                              className={`w-full flex items-center gap-3 px-4 py-2.5 transition text-left text-sm disabled:opacity-50 ${
+                                project.status === 'Completed' ? 'bg-charcoal-700 text-blue-400' : 'text-warm-100 hover:bg-charcoal-700'
+                              }`}
+                            >
+                              <CheckCircle size={14} className="text-blue-500" />
+                              <span>Completed</span>
+                            </button>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+
+                    {/* Always Visible Status on Desktop */}
+                    <div className="hidden md:block">
+                      <div className="border-t border-charcoal-700 my-1" />
+                      <div className="px-3 py-2 text-xs font-semibold text-charcoal-400 uppercase">Status</div>
+                      <button
+                        onClick={() => handleStatusChange('Active')}
+                        disabled={isUpdating || project.status === 'Active'}
+                        className={`w-full flex items-center gap-3 px-4 py-2.5 transition text-left text-sm disabled:opacity-50 ${
+                          project.status === 'Active' ? 'bg-charcoal-700 text-green-400' : 'text-warm-100 hover:bg-charcoal-700'
+                        }`}
+                      >
+                        <CheckCircle size={14} className="text-green-500" />
+                        <span>Active</span>
+                      </button>
+                      <button
+                        onClick={() => handleStatusChange('On Hold')}
+                        disabled={isUpdating || project.status === 'On Hold'}
+                        className={`w-full flex items-center gap-3 px-4 py-2.5 transition text-left text-sm disabled:opacity-50 ${
+                          project.status === 'On Hold' ? 'bg-charcoal-700 text-amber-400' : 'text-warm-100 hover:bg-charcoal-700'
+                        }`}
+                      >
+                        <CheckCircle size={14} className="text-amber-500" />
+                        <span>On Hold</span>
+                      </button>
+                      <button
+                        onClick={() => handleStatusChange('Completed')}
+                        disabled={isUpdating || project.status === 'Completed'}
+                        className={`w-full flex items-center gap-3 px-4 py-2.5 transition text-left text-sm disabled:opacity-50 ${
+                          project.status === 'Completed' ? 'bg-charcoal-700 text-blue-400' : 'text-warm-100 hover:bg-charcoal-700'
+                        }`}
+                      >
+                        <CheckCircle size={14} className="text-blue-500" />
+                        <span>Completed</span>
+                      </button>
+                    </div>
+
                     <div className="border-t border-charcoal-700 my-1" />
                     <button
                       onClick={(e) => {
