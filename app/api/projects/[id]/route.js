@@ -85,6 +85,25 @@ export async function PATCH(request, { params }) {
     }
 
     const updates = await request.json();
+    const isCompletingProject = updates.status === 'Completed' && project.status !== 'Completed';
+
+    if (isCompletingProject && !updates.completeTasks) {
+      const incompleteCount = await Task.countDocuments({
+        project: id,
+        status: { $ne: 'Completed' },
+      });
+
+      if (incompleteCount > 0) {
+        return NextResponse.json(
+          {
+            error: 'Project has incomplete tasks',
+            requiresConfirmation: true,
+            incompleteCount,
+          },
+          { status: 409 }
+        );
+      }
+    }
     
     // Handle team members update
     if (updates.teamMembers !== undefined) {
@@ -101,6 +120,13 @@ export async function PATCH(request, { params }) {
 
     project.updatedAt = Date.now();
     await project.save();
+
+    if (isCompletingProject && updates.completeTasks) {
+      await Task.updateMany(
+        { project: id, status: { $ne: 'Completed' } },
+        { status: 'Completed', updatedAt: Date.now() }
+      );
+    }
 
     await Activity.create({
       user: userId,

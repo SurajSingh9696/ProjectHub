@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/db/mongoose';
 import Task from '@/lib/models/Task';
+import Project from '@/lib/models/Project';
 import Activity from '@/lib/models/Activity';
 import { getAuthUser } from '@/lib/auth/jwt';
 
@@ -20,6 +21,7 @@ export async function GET(request) {
     const projectId = searchParams.get('project');
     const status = searchParams.get('status');
     const priority = searchParams.get('priority');
+    const includeCompletedProjects = searchParams.get('includeCompletedProjects') === 'true';
 
     await dbConnect();
 
@@ -33,6 +35,22 @@ export async function GET(request) {
     if (projectId) query.project = projectId;
     if (status) query.status = status;
     if (priority) query.priority = priority;
+
+    if (!includeCompletedProjects) {
+      if (projectId) {
+        const project = await Project.findById(projectId).select('status');
+        if (project?.status === 'Completed') {
+          return NextResponse.json({ tasks: [] });
+        }
+      } else {
+        const completedProjects = await Project.find({ status: 'Completed' }).select('_id');
+        if (completedProjects.length > 0) {
+          query.project = query.project
+            ? { $eq: query.project, $nin: completedProjects.map(p => p._id) }
+            : { $nin: completedProjects.map(p => p._id) };
+        }
+      }
+    }
 
     const tasks = await Task.find(query)
       .populate('project', 'name category')

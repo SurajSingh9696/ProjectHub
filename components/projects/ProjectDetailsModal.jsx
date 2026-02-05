@@ -1,14 +1,16 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { X, Calendar, Tag, Users, Clock, Edit2, Trash2, User } from 'lucide-react';
+import { X, Calendar, Tag, Users, Clock, Edit2, Trash2, User, ListChecks } from 'lucide-react';
 import { format } from 'date-fns';
 import { useState } from 'react';
 import EditProjectModal from './EditProjectModal';
+import ProjectTaskListModal from './ProjectTaskListModal';
 import toast from 'react-hot-toast';
 
 export default function ProjectDetailsModal({ project, onClose, onUpdate }) {
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showTaskList, setShowTaskList] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   const statusColors = {
@@ -150,7 +152,7 @@ export default function ProjectDetailsModal({ project, onClose, onUpdate }) {
             </div>
 
             {/* Actions */}
-            <div className="flex flex-col sm:flex-row gap-3 pt-4">
+            <div className="flex flex-col sm:flex-row sm:flex-wrap gap-3 pt-4">
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -159,6 +161,15 @@ export default function ProjectDetailsModal({ project, onClose, onUpdate }) {
               >
                 <Edit2 size={18} />
                 Edit Project
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setShowTaskList(true)}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-charcoal-700/70 text-warm-100 border border-charcoal-600 rounded-xl font-semibold hover:bg-charcoal-700 transition-all"
+              >
+                <ListChecks size={18} className="text-amber-400" />
+                Task List
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.02 }}
@@ -184,6 +195,13 @@ export default function ProjectDetailsModal({ project, onClose, onUpdate }) {
             onClose();
             if (onUpdate) onUpdate();
           }}
+        />
+      )}
+
+      {showTaskList && (
+        <ProjectTaskListModal
+          project={project}
+          onClose={() => setShowTaskList(false)}
         />
       )}
     </>

@@ -53,6 +53,27 @@ export default function EditProjectModal({ project, onClose, onSuccess }) {
 
     setIsLoading(true);
     try {
+      const isCompletingProject = formData.status === 'Completed' && project.status !== 'Completed';
+      let completeTasks = false;
+
+      if (isCompletingProject) {
+        const taskRes = await fetch(`/api/tasks?project=${project._id}&includeCompletedProjects=true&limit=200`);
+        if (taskRes.ok) {
+          const taskData = await taskRes.json();
+          const incompleteTasks = (taskData.tasks || []).filter(task => task.status !== 'Completed');
+          if (incompleteTasks.length > 0) {
+            const confirmComplete = confirm(
+              'This project has incomplete tasks. Completing the project will mark them as completed and remove them from the task board. Continue?'
+            );
+            if (!confirmComplete) {
+              setIsLoading(false);
+              return;
+            }
+            completeTasks = true;
+          }
+        }
+      }
+
       const isTeamProject = formData.category === 'Team' || formData.category === 'Business';
       const filteredTeamMembers = isTeamProject 
         ? teamMembers.filter(member => member.trim() !== '') 
@@ -64,6 +85,7 @@ export default function EditProjectModal({ project, onClose, onSuccess }) {
         body: JSON.stringify({
           ...formData,
           teamMembers: filteredTeamMembers,
+          completeTasks: completeTasks || undefined,
         }),
       });
 
@@ -73,7 +95,35 @@ export default function EditProjectModal({ project, onClose, onSuccess }) {
         toast.success('Project updated successfully!');
         onSuccess();
       } else {
-        toast.error(data.error || 'Failed to update project');
+        if (res.status === 409 && data?.requiresConfirmation) {
+          const confirmComplete = confirm(
+            'This project has incomplete tasks. Completing the project will mark them as completed and remove them from the task board. Continue?'
+          );
+          if (!confirmComplete) {
+            setIsLoading(false);
+            return;
+          }
+
+          const retryRes = await fetch(`/api/projects/${project._id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              ...formData,
+              teamMembers: filteredTeamMembers,
+              completeTasks: true,
+            }),
+          });
+
+          const retryData = await retryRes.json();
+          if (retryRes.ok) {
+            toast.success('Project updated successfully!');
+            onSuccess();
+          } else {
+            toast.error(retryData.error || 'Failed to update project');
+          }
+        } else {
+          toast.error(data.error || 'Failed to update project');
+        }
       }
     } catch (error) {
       toast.error('Something went wrong. Please try again.');
