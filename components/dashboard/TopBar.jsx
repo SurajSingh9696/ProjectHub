@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/context/AuthContext';
 import { Search, Bell, LogOut, User, Settings, Sun, Moon } from 'lucide-react';
@@ -17,6 +17,7 @@ export default function TopBar() {
   const [theme, setTheme] = useState('dark');
   const [isTogglingTheme, setIsTogglingTheme] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
     if (user) {
@@ -24,6 +25,22 @@ export default function TopBar() {
       fetchUnreadCount();
     }
   }, [user]);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+
+    if (showDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showDropdown]);
 
   const fetchUnreadCount = async () => {
     try {
@@ -118,7 +135,7 @@ export default function TopBar() {
             )}
           </button>
 
-          <div className="relative">
+          <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setShowDropdown(!showDropdown)}
               className="flex items-center gap-3 px-3 py-2 hover:bg-charcoal-700 rounded-lg transition"
