@@ -17,7 +17,6 @@ export default function ProjectDetailsModal({ project, onClose, onUpdate }) {
     'Active': 'bg-green-500/10 text-green-500 border-green-500/30',
     'On Hold': 'bg-amber-500/10 text-amber-500 border-amber-500/30',
     'Completed': 'bg-blue-500/10 text-blue-500 border-blue-500/30',
-    'Archived': 'bg-charcoal-600 text-charcoal-400 border-charcoal-500',
   };
 
   const categoryColors = {
@@ -157,7 +156,7 @@ export default function ProjectDetailsModal({ project, onClose, onUpdate }) {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={handleEdit}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-amber-500 text-charcoal-900 rounded-xl font-semibold hover:bg-amber-400 transition-all shadow-lg shadow-amber-500/30"
+                className="order-1 flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-amber-500 text-charcoal-900 rounded-xl font-semibold hover:bg-amber-400 transition-all shadow-lg shadow-amber-500/30"
               >
                 <Edit2 size={18} />
                 Edit Project
@@ -166,7 +165,7 @@ export default function ProjectDetailsModal({ project, onClose, onUpdate }) {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setShowTaskList(true)}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-charcoal-700/70 text-warm-100 border border-charcoal-600 rounded-xl font-semibold hover:bg-charcoal-700 transition-all"
+                className="order-2 flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-charcoal-700/70 text-warm-100 border border-charcoal-600 rounded-xl font-semibold hover:bg-charcoal-700 transition-all"
               >
                 <ListChecks size={18} className="text-amber-400" />
                 Task List
@@ -176,7 +175,7 @@ export default function ProjectDetailsModal({ project, onClose, onUpdate }) {
                 whileTap={{ scale: 0.98 }}
                 onClick={handleDelete}
                 disabled={isDeleting}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-red-500/10 text-red-400 border-2 border-red-500/30 rounded-xl font-semibold hover:bg-red-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="order-3 flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-red-500/10 text-red-400 border-2 border-red-500/30 rounded-xl font-semibold hover:bg-red-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Trash2 size={18} />
                 {isDeleting ? 'Deleting...' : 'Delete Project'}

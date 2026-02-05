@@ -1,6 +1,6 @@
 'use client';
 
-import { Calendar, Users, MoreVertical, Edit2, Trash2 } from 'lucide-react';
+import { Calendar, Users, MoreVertical, Edit2, Trash2, CheckCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -16,11 +16,12 @@ export default function ProjectCard({ project, onUpdate }) {
   const menuRef = useRef(null);
 
   const statusColors = {
-    'Active': 'bg-green-500/10 text-green-500 border-green-500/30',
-    'On Hold': 'bg-amber-500/10 text-amber-500 border-amber-500/30',
-    'Completed': 'bg-blue-500/10 text-blue-500 border-blue-500/30',
-    'Archived': 'bg-charcoal-600 text-charcoal-400 border-charcoal-500',
+    'Active': 'bg-green-500/10 text-green-500 border-green-500/30 dark:bg-green-500/10 dark:text-green-500 dark:border-green-500/30',
+    'On Hold': 'bg-amber-500/10 text-amber-500 border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-500 dark:border-amber-500/30',
+    'Completed': 'bg-blue-500/10 text-blue-500 border-blue-500/30 dark:bg-blue-500/10 dark:text-blue-500 dark:border-blue-500/30',
   };
+
+  const [isUpdating, setIsUpdating] = useState(false);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -68,6 +69,36 @@ export default function ProjectCard({ project, onUpdate }) {
     e.stopPropagation();
     setShowEditModal(true);
     setShowMenu(false);
+  };
+
+  const handleStatusChange = async (newStatus) => {
+    if (newStatus === project.status) {
+      setShowMenu(false);
+      return;
+    }
+
+    setIsUpdating(true);
+    setShowMenu(false);
+    
+    try {
+      const res = await fetch(`/api/projects/${project._id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (res.ok) {
+        toast.success(`Project status updated to ${newStatus}`);
+        if (onUpdate) onUpdate();
+      } else {
+        const data = await res.json();
+        toast.error(data.error || 'Failed to update status');
+      }
+    } catch (error) {
+      toast.error('Something went wrong');
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   const handleCardClick = () => {
@@ -120,6 +151,39 @@ export default function ProjectCard({ project, onUpdate }) {
                       <Edit2 size={16} className="text-amber-500" />
                       <span>Edit Project</span>
                     </button>
+                    <div className="border-t border-charcoal-700 my-1" />
+                    <div className="px-3 py-2 text-xs font-semibold text-charcoal-400 uppercase">Status</div>
+                    <button
+                      onClick={() => handleStatusChange('Active')}
+                      disabled={isUpdating || project.status === 'Active'}
+                      className={`w-full flex items-center gap-3 px-4 py-2.5 transition text-left text-sm disabled:opacity-50 ${
+                        project.status === 'Active' ? 'bg-charcoal-700 text-green-400' : 'text-warm-100 hover:bg-charcoal-700'
+                      }`}
+                    >
+                      <CheckCircle size={14} className="text-green-500" />
+                      <span>Active</span>
+                    </button>
+                    <button
+                      onClick={() => handleStatusChange('On Hold')}
+                      disabled={isUpdating || project.status === 'On Hold'}
+                      className={`w-full flex items-center gap-3 px-4 py-2.5 transition text-left text-sm disabled:opacity-50 ${
+                        project.status === 'On Hold' ? 'bg-charcoal-700 text-amber-400' : 'text-warm-100 hover:bg-charcoal-700'
+                      }`}
+                    >
+                      <CheckCircle size={14} className="text-amber-500" />
+                      <span>On Hold</span>
+                    </button>
+                    <button
+                      onClick={() => handleStatusChange('Completed')}
+                      disabled={isUpdating || project.status === 'Completed'}
+                      className={`w-full flex items-center gap-3 px-4 py-2.5 transition text-left text-sm disabled:opacity-50 ${
+                        project.status === 'Completed' ? 'bg-charcoal-700 text-blue-400' : 'text-warm-100 hover:bg-charcoal-700'
+                      }`}
+                    >
+                      <CheckCircle size={14} className="text-blue-500" />
+                      <span>Completed</span>
+                    </button>
+                    <div className="border-t border-charcoal-700 my-1" />
                     <button
                       onClick={(e) => {
                         e.stopPropagation();

@@ -217,7 +217,6 @@ export default function EditProjectModal({ project, onClose, onSuccess }) {
                 <option value="Active">Active</option>
                 <option value="On Hold">On Hold</option>
                 <option value="Completed">Completed</option>
-                <option value="Archived">Archived</option>
               </select>
             </div>
 

@@ -14,6 +14,7 @@ const priorityColors = {
 
 export default function CreateTaskModal({ onClose, onSuccess }) {
   const [projects, setProjects] = useState([]);
+  const [isLoadingProjects, setIsLoadingProjects] = useState(true);
   const today = new Date().toISOString().split('T')[0];
   const [formData, setFormData] = useState({
     title: '',
@@ -32,6 +33,7 @@ export default function CreateTaskModal({ onClose, onSuccess }) {
   }, []);
 
   const fetchProjects = async () => {
+    setIsLoadingProjects(true);
     try {
       const res = await fetch('/api/projects');
       if (res.ok) {
@@ -43,6 +45,8 @@ export default function CreateTaskModal({ onClose, onSuccess }) {
       }
     } catch (error) {
       toast.error('Failed to load projects');
+    } finally {
+      setIsLoadingProjects(false);
     }
   };
 
@@ -110,7 +114,25 @@ export default function CreateTaskModal({ onClose, onSuccess }) {
     }
   };
 
-  if (projects.length === 0 && !isLoading) {
+  if (isLoadingProjects) {
+    return (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="bg-charcoal-800 rounded-xl border border-charcoal-700 w-full max-w-md p-8 text-center"
+        >
+          <Loader2 size={48} className="text-amber-500 mx-auto mb-4 animate-spin" />
+          <h2 className="text-xl font-bold text-warm-50 mb-2">Loading Projects...</h2>
+          <p className="text-charcoal-300">
+            Please wait while we fetch your projects.
+          </p>
+        </motion.div>
+      </div>
+    );
+  }
+
+  if (projects.length === 0) {
     return (
       <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
         <motion.div
